@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  super_admin
+  dispatcher
+  technician
+  client
+  site_manager
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+}
+
+enum TechnicianAvailability {
+  available
+  busy
+  off_duty
+}
+
+enum ClientType {
+  bank
+  hotel
+  airport
+  corporate
+  other
+}
+
+enum JobType {
+  installation
+  maintenance
+  survey
+  fault_repair
+}
+
+enum JobStatus {
+  pending
+  assigned
+  en_route
+  checked_in
+  in_progress
+  completed
+  cancelled
+}
+
+enum JobPriority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum InventoryCategory {
+  camera
+  dvr
+  cable
+  connector
+  power
+  other
+}
+
+model User {
+  id          String     @id @default(uuid())
+  phone       String     @unique
+  email       String?    @unique
+  fullName    String
+  role        UserRole
+  status      UserStatus @default(active)
+  avatarUrl   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  technician  Technician?
+}
+
+model Technician {
+  id                String                 @id @default(uuid())
+  userId            String                 @unique
+  employeeId        String                 @unique
+  skills            String[]
+  currentLat        Decimal?
+  currentLng        Decimal?
+  locationUpdatedAt DateTime?
+  availability      TechnicianAvailability @default(available)
+  activeJobId       String?
+  totalJobsDone     Int                    @default(0)
+  rating            Decimal?
+  user              User                   @relation(fields: [userId], references: [id])
+  @@index([availability])
+}
+
+model Client {
+  id               String     @id @default(uuid())
+  organizationName String
+  clientType       ClientType
+  isHighSecurity   Boolean    @default(false)
+  contractStart    DateTime?
+  contractEnd      DateTime?
+  createdAt        DateTime   @default(now())
+  sites            Site[]
+  jobs             Job[]
+}
+
+model Site {
+  id             String   @id @default(uuid())
+  clientId       String
+  siteName       String
+  address        String
+  city           String
+  latitude       Decimal
+  longitude      Decimal
+  geofenceRadius Int      @default(100)
+  isActive       Boolean  @default(true)
+  client         Client   @relation(fields: [clientId], references: [id])
+  jobs           Job[]
+  @@index([clientId])
+}
+
+model Job {
+  id                   String      @id @default(uuid())
+  jobNumber            String      @unique
+  clientId             String
+  siteId               String
+  assignedTechnicianId String?
+  createdBy            String
+  jobType              JobType
+  status               JobStatus   @default(pending)
+  priority             JobPriority @default(normal)
+  description          String?
+  scheduledAt          DateTime?
+  checkinAt            DateTime?
+  checkoutAt           DateTime?
+  otpVerified          Boolean     @default(false)
+  clientSigned         Boolean     @default(false)
+  reportUrl            String?
+  createdAt            DateTime    @default(now())
+  client               Client      @relation(fields: [clientId], references: [id])
+  site                 Site        @relation(fields: [siteId], references: [id])
+  survey               JobSurvey?
+  materials            JobMaterial[]
+  @@index([status])
+  @@index([clientId])
+}
+
+model JobSurvey {
+  id                 String   @id @default(uuid())
+  jobId              String   @unique
+  cameraCount        Int?
+  cameraModels       Json?
+  dvrModel           String?
+  dvrChannels        Int?
+  cableLengthMeters  Decimal?
+  powerPoints        Int?
+  networkPoints      Int?
+  technicianNotes    String?
+  beforePhotos       String[]
+  afterPhotos        String[]
+  clientSignatureUrl String?
+  submittedAt        DateTime?
+  job                Job      @relation(fields: [jobId], references: [id])
+}
+
+model InventoryItem {
+  id            String            @id @default(uuid())
+  sku           String            @unique
+  name          String
+  category      InventoryCategory
+  unit          String
+  currentStock  Decimal
+  minStockLevel Decimal
+  costPrice     Decimal?
+  sellPrice     Decimal?
+  isActive      Boolean           @default(true)
+  materials     JobMaterial[]
+}
+
+model JobMaterial {
+  id           String        @id @default(uuid())
+  jobId        String
+  itemId       String
+  quantityUsed Decimal
+  markedBy     String
+  markedAt     DateTime      @default(now())
+  job          Job           @relation(fields: [jobId], references: [id])
+  item         InventoryItem @relation(fields: [itemId], references: [id])
+  @@index([jobId])
+  @@index([itemId])
+}

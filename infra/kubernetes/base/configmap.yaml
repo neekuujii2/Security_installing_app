@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-config
+  namespace: smart-security
+data:
+  AUTH_SERVICE_URL: http://auth-service:4101
+  DISPATCH_SERVICE_URL: http://dispatch-service:4102
+  TRACKING_SERVICE_URL: http://tracking-service:4103
+  INVENTORY_SERVICE_URL: http://inventory-service:4104
+  REPORT_SERVICE_URL: http://report-service:4105
+  NOTIFICATION_SERVICE_URL: http://notification-service:4106
+  CLIENT_SERVICE_URL: http://client-service:4107

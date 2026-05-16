@@ -1,0 +1,35 @@
+{
+  "name": "smart-security-ecosystem",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all build:contracts --parallel dev:gateway dev:auth dev:dispatch dev:tracking dev:inventory dev:report dev:notification dev:client dev:web",
+    "dev:gateway": "npm --workspace apps/api-gateway run dev",
+    "dev:auth": "npm --workspace apps/auth-service run dev",
+    "dev:dispatch": "npm --workspace apps/dispatch-service run dev",
+    "dev:tracking": "npm --workspace apps/tracking-service run dev",
+    "dev:inventory": "npm --workspace apps/inventory-service run dev",
+    "dev:report": "npm --workspace apps/report-service run dev",
+    "dev:notification": "npm --workspace apps/notification-service run dev",
+    "dev:client": "npm --workspace apps/client-service run dev",
+    "dev:web": "npm --workspace apps/web run dev",
+    "build": "npm-run-all build:contracts build:gateway build:auth build:dispatch build:tracking build:inventory build:report build:notification build:client build:web",
+    "build:contracts": "npm --workspace shared/contracts run build",
+    "build:gateway": "npm --workspace apps/api-gateway run build",
+    "build:auth": "npm --workspace apps/auth-service run build",
+    "build:dispatch": "npm --workspace apps/dispatch-service run build",
+    "build:tracking": "npm --workspace apps/tracking-service run build",
+    "build:inventory": "npm --workspace apps/inventory-service run build",
+    "build:report": "npm --workspace apps/report-service run build",
+    "build:notification": "npm --workspace apps/notification-service run build",
+    "build:client": "npm --workspace apps/client-service run build",
+    "build:web": "npm --workspace apps/web run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

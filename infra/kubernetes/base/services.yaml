@@ -1,0 +1,279 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: ghcr.io/your-org/smart-security/auth-service:latest
+          ports:
+            - containerPort: 4101
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4101
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: smart-security
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 4101
+      targetPort: 4101
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatch-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dispatch-service
+  template:
+    metadata:
+      labels:
+        app: dispatch-service
+    spec:
+      containers:
+        - name: dispatch-service
+          image: ghcr.io/your-org/smart-security/dispatch-service:latest
+          ports:
+            - containerPort: 4102
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4102
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispatch-service
+  namespace: smart-security
+spec:
+  selector:
+    app: dispatch-service
+  ports:
+    - port: 4102
+      targetPort: 4102
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracking-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tracking-service
+  template:
+    metadata:
+      labels:
+        app: tracking-service
+    spec:
+      containers:
+        - name: tracking-service
+          image: ghcr.io/your-org/smart-security/tracking-service:latest
+          ports:
+            - containerPort: 4103
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4103
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracking-service
+  namespace: smart-security
+spec:
+  selector:
+    app: tracking-service
+  ports:
+    - port: 4103
+      targetPort: 4103
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+        - name: inventory-service
+          image: ghcr.io/your-org/smart-security/inventory-service:latest
+          ports:
+            - containerPort: 4104
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  namespace: smart-security
+spec:
+  selector:
+    app: inventory-service
+  ports:
+    - port: 4104
+      targetPort: 4104
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: report-service
+  template:
+    metadata:
+      labels:
+        app: report-service
+    spec:
+      containers:
+        - name: report-service
+          image: ghcr.io/your-org/smart-security/report-service:latest
+          ports:
+            - containerPort: 4105
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4105
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: report-service
+  namespace: smart-security
+spec:
+  selector:
+    app: report-service
+  ports:
+    - port: 4105
+      targetPort: 4105
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: ghcr.io/your-org/smart-security/notification-service:latest
+          ports:
+            - containerPort: 4106
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4106
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: smart-security
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - port: 4106
+      targetPort: 4106
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-service
+  namespace: smart-security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: client-service
+  template:
+    metadata:
+      labels:
+        app: client-service
+    spec:
+      containers:
+        - name: client-service
+          image: ghcr.io/your-org/smart-security/client-service:latest
+          ports:
+            - containerPort: 4107
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4107
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-service
+  namespace: smart-security
+spec:
+  selector:
+    app: client-service
+  ports:
+    - port: 4107
+      targetPort: 4107
