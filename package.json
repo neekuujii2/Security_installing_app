@@ -2,6 +2,9 @@
   "name": "smart-security-ecosystem",
   "private": true,
   "version": "1.0.0",
+  "engines": {
+    "node": "20.x"
+  },
   "workspaces": [
     "apps/api-gateway",
     "apps/auth-service",
