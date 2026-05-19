@@ -43,6 +43,8 @@ interface LiveMapDashboardProps {
   className?: string;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
 const mapContainerStyle = {
   width: '100%',
   height: '100%',
@@ -147,8 +149,8 @@ export const LiveMapDashboard = memo(function LiveMapDashboard({ className }: Li
     const fetchInitialData = async () => {
       try {
         const [techRes, jobsRes] = await Promise.all([
-          fetch('/api/technicians').then(r => r.json()),
-          fetch('/api/jobs?status=pending,assigned,in_progress').then(r => r.json()),
+          fetch(`${API_BASE_URL}/technicians`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/jobs?status=pending,assigned,in_progress`).then(r => r.json()),
         ]);
         setTechnicians(techRes);
         setJobs(jobsRes);

@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { store } from '../store';
 import { logout } from '../store/slices/authSlice';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 class SocketClient {
   private static instance: SocketClient;
@@ -62,14 +62,14 @@ class SocketClient {
       this.reconnectAttempts = 0;
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', (reason: string) => {
       console.log('Socket disconnected:', reason);
       if (reason === 'io server disconnect') {
         this.socket?.connect();
       }
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', (error: Error) => {
       console.error('Socket connection error:', error.message);
       this.reconnectAttempts++;
       if (this.reconnectAttempts >= this.maxReconnectAttempts) {
@@ -77,17 +77,17 @@ class SocketClient {
       }
     });
 
-    this.socket.on('job:assigned', (data) => {
+    this.socket.on('job:assigned', (data: any) => {
       console.log('Job assigned:', data);
       window.dispatchEvent(new CustomEvent('job:assigned', { detail: data }));
     });
 
-    this.socket.on('job:status_changed', (data) => {
+    this.socket.on('job:status_changed', (data: any) => {
       console.log('Job status changed:', data);
       window.dispatchEvent(new CustomEvent('job:status_changed', { detail: data }));
     });
 
-    this.socket.on('notification', (data) => {
+    this.socket.on('notification', (data: any) => {
       console.log('Notification received:', data);
       window.dispatchEvent(new CustomEvent('notification', { detail: data }));
     });
@@ -105,11 +105,11 @@ class SocketClient {
       console.log('Location socket connected');
     });
 
-    this.locationSocket.on('technician:location_update', (data) => {
+    this.locationSocket.on('technician:location_update', (data: any) => {
       window.dispatchEvent(new CustomEvent('technician:location_update', { detail: data }));
     });
 
-    this.locationSocket.on('job:location_update', (data) => {
+    this.locationSocket.on('job:location_update', (data: any) => {
       window.dispatchEvent(new CustomEvent('job:location_update', { detail: data }));
     });
   }

@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { logout, setToken, setUser } from '../slices/authSlice';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
@@ -13,15 +13,19 @@ export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
   
   const argsObj = typeof args === 'string' ? { url: args } : args;
   
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(argsObj.headers || {}),
-  };
-
   const result = await fetchBaseQuery({
     baseUrl: API_BASE_URL,
-    prepareHeaders: () => headers,
+    prepareHeaders: (headers) => {
+      headers.set('Content-Type', 'application/json');
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      if (argsObj.headers) {
+        const requestHeaders = new Headers(argsObj.headers as HeadersInit);
+        requestHeaders.forEach((value: string, key: string) => headers.set(key, value));
+      }
+      return headers;
+    },
   })(argsObj, api, extraOptions);
 
   if (result.error) {
@@ -53,10 +57,15 @@ export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
             
             const retryResult = await fetchBaseQuery({
               baseUrl: API_BASE_URL,
-              prepareHeaders: () => ({
-                ...headers,
-                Authorization: `Bearer ${accessToken}`,
-              }),
+              prepareHeaders: (headers) => {
+                headers.set('Content-Type', 'application/json');
+                headers.set('Authorization', `Bearer ${accessToken}`);
+                if (argsObj.headers) {
+                  const requestHeaders = new Headers(argsObj.headers as HeadersInit);
+                  requestHeaders.forEach((value: string, key: string) => headers.set(key, value));
+                }
+                return headers;
+              },
             })(argsObj, api, extraOptions);
             
             return retryResult;

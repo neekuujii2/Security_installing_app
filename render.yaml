@@ -1,0 +1,104 @@
+services:
+  - type: web
+    name: smart-security-api-gateway
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/api-gateway/dist/index.js
+    plan: starter
+    envVars:
+      - key: API_GATEWAY_PORT
+        value: "10000"
+      - key: AUTH_SERVICE_URL
+        value: http://smart-security-auth-service:4101
+      - key: DISPATCH_SERVICE_URL
+        value: http://smart-security-dispatch-service:4102
+      - key: TRACKING_SERVICE_URL
+        value: http://smart-security-tracking-service:4103
+      - key: INVENTORY_SERVICE_URL
+        value: http://smart-security-inventory-service:4104
+      - key: REPORT_SERVICE_URL
+        value: http://smart-security-report-service:4105
+      - key: NOTIFICATION_SERVICE_URL
+        value: http://smart-security-notification-service:4106
+      - key: CLIENT_SERVICE_URL
+        value: http://smart-security-client-service:4107
+
+  - type: pserv
+    name: smart-security-auth-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/auth-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: AUTH_SERVICE_PORT
+        value: "4101"
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: pserv
+    name: smart-security-dispatch-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/dispatch-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: DISPATCH_SERVICE_PORT
+        value: "4102"
+
+  - type: pserv
+    name: smart-security-tracking-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/tracking-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: TRACKING_SERVICE_PORT
+        value: "4103"
+
+  - type: pserv
+    name: smart-security-inventory-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/inventory-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: INVENTORY_SERVICE_PORT
+        value: "4104"
+
+  - type: pserv
+    name: smart-security-report-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/report-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: REPORT_SERVICE_PORT
+        value: "4105"
+
+  - type: pserv
+    name: smart-security-notification-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/notification-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: NOTIFICATION_SERVICE_PORT
+        value: "4106"
+
+  - type: pserv
+    name: smart-security-client-service
+    runtime: docker
+    dockerfilePath: ./infra/docker/node-service.Dockerfile
+    dockerContext: .
+    dockerCommand: node apps/client-service/dist/index.js
+    plan: starter
+    envVars:
+      - key: CLIENT_SERVICE_PORT
+        value: "4107"

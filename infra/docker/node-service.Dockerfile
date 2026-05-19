@@ -1,25 +1,31 @@
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
-ARG SERVICE_PATH
 WORKDIR /workspace
 
-COPY package.json package-lock.json* tsconfig.base.json ./
+COPY package.json package-lock.json tsconfig.base.json ./
 COPY shared ./shared
 COPY apps ./apps
 
-RUN npm install
+RUN npm ci
 RUN npm --workspace shared/contracts run build
-RUN npm --workspace ${SERVICE_PATH} run build
+RUN npm --workspace apps/api-gateway run build
+RUN npm --workspace apps/auth-service run build
+RUN npm --workspace apps/dispatch-service run build
+RUN npm --workspace apps/tracking-service run build
+RUN npm --workspace apps/inventory-service run build
+RUN npm --workspace apps/report-service run build
+RUN npm --workspace apps/notification-service run build
+RUN npm --workspace apps/client-service run build
 
-FROM node:22-alpine
+FROM node:20-alpine AS runner
 
-ARG SERVICE_PATH
-WORKDIR /app
+ENV NODE_ENV=production
+WORKDIR /workspace
 
 COPY --from=builder /workspace/node_modules ./node_modules
-COPY --from=builder /workspace/${SERVICE_PATH}/dist ./dist
-COPY --from=builder /workspace/${SERVICE_PATH}/package.json ./package.json
-COPY --from=builder /workspace/shared/contracts/dist ./node_modules/@smart-security/contracts/dist
-COPY --from=builder /workspace/shared/contracts/package.json ./node_modules/@smart-security/contracts/package.json
+COPY --from=builder /workspace/apps ./apps
+COPY --from=builder /workspace/shared ./shared
+COPY --from=builder /workspace/package.json ./package.json
+COPY --from=builder /workspace/package-lock.json ./package-lock.json
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "apps/api-gateway/dist/index.js"]
