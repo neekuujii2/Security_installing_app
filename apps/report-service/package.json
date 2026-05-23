@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "zod": "^3.24.2"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
